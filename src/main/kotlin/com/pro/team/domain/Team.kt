@@ -1,5 +1,7 @@
 package com.pro.team.domain
 
+import org.bouncycastle.asn1.x500.style.RFC4519Style.description
+import java.util.*
 import javax.persistence.*
 
 /**
@@ -7,11 +9,14 @@ import javax.persistence.*
  */
 
 @Entity
-@Table(name = "team_tbl")
+@Table(
+    name = "team_tbl",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["team_id", "teamToken"])]
+)
 class Team(
     uuid: String,
     teamName: String,
-    password: String,
+    description: String,
 ): BaseTimeEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_sequence_gen")
@@ -26,5 +31,11 @@ class Team(
     var teamName = teamName
 
     @Column(nullable = false)
-    var password = password
+    var description = description
+
+    @Column(nullable = false, unique = true)
+    var teamToken = UUID.randomUUID().toString()
+
+    @OneToMany(mappedBy = "team", cascade = [(CascadeType.PERSIST)], orphanRemoval = true)
+    var teamMemberList = mutableListOf<TeamMember>()
 }
