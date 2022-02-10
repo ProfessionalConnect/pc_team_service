@@ -3,6 +3,8 @@ package com.pro.team.service.implement
 import com.pro.team.domain.MemberType
 import com.pro.team.domain.TeamMember
 import com.pro.team.dto.*
+import com.pro.team.exception.custom.NotFoundTeamException
+import com.pro.team.exception.custom.UnAuthorizedTeamMemberException
 import com.pro.team.repository.TeamMemberRepository
 import com.pro.team.repository.TeamRepository
 import com.pro.team.service.TeamService
@@ -30,39 +32,46 @@ class TeamServiceImplement: TeamService {
 
     @Transactional(readOnly = true)
     override fun getTeamToken(uuid: String, teamId: Long): TeamTokenResponse {
-        /** TODO(Exception 처리) **/
-        val team = teamRepository.findByIdAndUuid(teamId, uuid).get()
+        val team = teamRepository.findByIdAndUuid(teamId, uuid)
+            .orElseThrow { throw NotFoundTeamException() }
         return TeamTokenResponse(team.teamToken)
     }
 
     @Transactional
     override fun joinTeamStudent(uuid: String, teamToken: String): TeamResponse {
-        /** TODO(Exception 처리) **/
-        val team = teamRepository.findByTeamToken(teamToken).get()
+        val team = teamRepository.findByTeamToken(teamToken)
+            .orElseThrow { throw NotFoundTeamException() }
         teamMemberRepository.save(TeamMember(uuid, MemberType.STUDENT, team))
         return TeamResponse.of(team)
     }
 
     @Transactional
     override fun joinTeamPro(uuid: String, teamToken: String): TeamResponse {
-        /** TODO(Exception 처리) **/
-        val team = teamRepository.findByTeamToken(teamToken).get()
+        val team = teamRepository.findByTeamToken(teamToken)
+            .orElseThrow { throw NotFoundTeamException() }
         teamMemberRepository.save(TeamMember(uuid, MemberType.JOIN_PRO, team))
         return TeamResponse.of(team)
     }
 
     @Transactional(readOnly = true)
     override fun getTeamMembers(uuid: String, teamId: Long): List<TeamMemberResponse> {
-        /** TODO(멤버 팀인증 절차 추가) **/
-        /** TODO(Exception 처리) **/
-        val team = teamRepository.findById(teamId).get()
-        return TeamMemberResponse.listOf(teamMemberRepository.findByTeam(team))
+        val team = teamRepository.findById(teamId)
+            .orElseThrow { throw NotFoundTeamException() }
+        val teamMemberList = teamMemberRepository.findByTeam(team)
+
+        val isValidTeamMember = teamMemberList.any { teamMember -> teamMember.uuid == uuid }
+
+        if (!isValidTeamMember) {
+            throw UnAuthorizedTeamMemberException()
+        }
+
+        return TeamMemberResponse.listOf(teamMemberList)
     }
 
     @Transactional(readOnly = true)
     override fun validateUserTargetTeamMember(uuid: String, teamId: Long): MemberValidateResponse {
-        /** TODO(Exception 처리) **/
-        val team = teamRepository.findById(teamId).get()
+        val team = teamRepository.findById(teamId)
+            .orElseThrow { throw NotFoundTeamException() }
         return MemberValidateResponse.of(teamMemberRepository.findByTeamAndUuid(team, uuid).isPresent)
     }
 }
