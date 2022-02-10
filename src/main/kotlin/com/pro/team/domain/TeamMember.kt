@@ -23,6 +23,7 @@ class TeamMember(
     var uuid = uuid
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     var memberType = memberType
 
     @ManyToOne(fetch = FetchType.LAZY)
