@@ -17,28 +17,26 @@ class TeamController {
     @Autowired
     private lateinit var teamService: TeamService
 
-    @GetMapping
+    @GetMapping("/members")
     fun getTeams(
         @RequestHeader(value = "uuid") uuid: String
     ): ResponseEntity<List<TeamResponse>> = ResponseEntity.ok(teamService.getTeams(uuid))
 
-    @PostMapping
-    fun setTeam(
-        @RequestHeader(value = "uuid") uuid: String,
-        @RequestBody teamRequest: TeamRequest
-    ): ResponseEntity<Void> {
-        val teamId = teamService.setTeam(uuid, teamRequest)
-        return ResponseEntity.created(URI("/api/v1/teams/${teamId}")).build()
-    }
-
-    @GetMapping("/{teamId}/token")
-    fun getTeamToken(
+    @GetMapping("/members/{teamId}")
+    fun getTeamMembers(
         @RequestHeader(value = "uuid") uuid: String,
         @PathVariable teamId: Long
-    ): ResponseEntity<TeamTokenResponse> =
-        ResponseEntity.ok(teamService.getTeamToken(uuid, teamId))
+    ): ResponseEntity<List<TeamMemberResponse>> =
+        ResponseEntity.ok(teamService.getTeamMembers(uuid, teamId))
 
-    @PostMapping("/join/students")
+    @GetMapping("/members/{teamId}/match")
+    fun validateUserTargetTeamMember(
+        @RequestHeader(value = "uuid") uuid: String,
+        @PathVariable teamId: Long
+    ): ResponseEntity<MemberValidateResponse> =
+        ResponseEntity.ok(teamService.validateUserTargetTeamMember(uuid, teamId))
+
+    @PostMapping("/students/join")
     fun joinTeamStudent(
         @RequestHeader(value = "uuid") uuid: String,
         @RequestHeader(value = "teamToken") teamToken: String
@@ -47,7 +45,16 @@ class TeamController {
         return ResponseEntity.created(URI("/api/v1/teams/${teamResponse.id}")).body(teamResponse)
     }
 
-    @PostMapping("/join/pros")
+    @PostMapping("/pros")
+    fun setTeam(
+        @RequestHeader(value = "uuid") uuid: String,
+        @RequestBody teamRequest: TeamRequest
+    ): ResponseEntity<Void> {
+        val teamId = teamService.setTeam(uuid, teamRequest)
+        return ResponseEntity.created(URI("/api/v1/teams/${teamId}")).build()
+    }
+
+    @PostMapping("/pros/join")
     fun joinTeamPro(
         @RequestHeader(value = "uuid") uuid: String,
         @RequestHeader(value = "teamToken") teamToken: String
@@ -56,17 +63,10 @@ class TeamController {
         return ResponseEntity.created(URI("/api/v1/teams/${teamResponse.id}")).body(teamResponse)
     }
 
-    @GetMapping("/{teamId}/members")
-    fun getTeamMembers(
+    @GetMapping("/pros/{teamId}/token")
+    fun getTeamToken(
         @RequestHeader(value = "uuid") uuid: String,
         @PathVariable teamId: Long
-    ): ResponseEntity<List<TeamMemberResponse>> =
-        ResponseEntity.ok(teamService.getTeamMembers(uuid, teamId))
-
-    @GetMapping("/{teamId}/members/match")
-    fun validateUserTargetTeamMember(
-        @RequestHeader(value = "uuid") uuid: String,
-        @PathVariable teamId: Long
-    ): ResponseEntity<MemberValidateResponse> =
-        ResponseEntity.ok(teamService.validateUserTargetTeamMember(uuid, teamId))
+    ): ResponseEntity<TeamTokenResponse> =
+        ResponseEntity.ok(teamService.getTeamToken(uuid, teamId))
 }
