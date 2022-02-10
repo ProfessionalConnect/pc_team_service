@@ -6,6 +6,7 @@ import com.pro.team.dto.*
  * Created by Minky on 2022-02-07
  */
 interface TeamService {
+    fun getTeams(uuid: String): List<TeamResponse>
     fun setTeam(uuid: String, teamRequest: TeamRequest): Long?
     fun getTeamToken(uuid: String, teamId: Long): TeamTokenResponse
     fun joinTeamStudent(uuid: String, teamToken: String): TeamResponse

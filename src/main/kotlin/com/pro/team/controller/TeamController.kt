@@ -17,6 +17,11 @@ class TeamController {
     @Autowired
     private lateinit var teamService: TeamService
 
+    @GetMapping
+    fun getTeams(
+        @RequestHeader(value = "uuid") uuid: String
+    ): ResponseEntity<List<TeamResponse>> = ResponseEntity.ok(teamService.getTeams(uuid))
+
     @PostMapping
     fun setTeam(
         @RequestHeader(value = "uuid") uuid: String,

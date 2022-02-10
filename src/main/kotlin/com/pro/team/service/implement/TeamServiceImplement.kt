@@ -23,6 +23,10 @@ class TeamServiceImplement: TeamService {
     @Autowired
     private lateinit var teamMemberRepository: TeamMemberRepository
 
+    @Transactional(readOnly = true)
+    override fun getTeams(uuid: String): List<TeamResponse> =
+        TeamResponse.listOf(teamRepository.findByUuid(uuid))
+
     @Transactional
     override fun setTeam(uuid: String, teamRequest: TeamRequest): Long? {
         val team = teamRepository.save(teamRequest.toEntity(uuid))
