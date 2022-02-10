@@ -2,6 +2,7 @@ package com.pro.team.exception
 
 import com.pro.team.exception.custom.CustomException
 import com.pro.team.exception.custom.NotFoundTeamException
+import com.pro.team.exception.custom.UnAuthorizedTeamMemberException
 import com.pro.team.exception.message.ErrorBody
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,6 +25,11 @@ class CustomExceptionHandler {
     @ExceptionHandler(NotFoundTeamException::class)
     @ResponseBody
     fun handleNotFoundTeamException(e: NotFoundTeamException): ResponseEntity<ErrorBody> =
+        ResponseEntity(getErrorBody(e), getHttpStatus(e))
+
+    @ExceptionHandler(UnAuthorizedTeamMemberException::class)
+    @ResponseBody
+    fun handleUnAuthorizedTeamMemberException(e: UnAuthorizedTeamMemberException): ResponseEntity<ErrorBody> =
         ResponseEntity(getErrorBody(e), getHttpStatus(e))
 
     private fun getHttpStatus(e: CustomException): HttpStatus =

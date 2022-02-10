@@ -10,5 +10,6 @@ enum class ErrorCode(
     val message: String,
     val httpStatus: HttpStatus
 ) {
+    UNAUTHORIZED_TEAM_MEMBER(401, "[ERROR] You are not join this Team, check your team list", HttpStatus.UNAUTHORIZED),
     NOT_FOUND_TEAM(404, "[ERROR] Team is not found", HttpStatus.NOT_FOUND), ;
 }
