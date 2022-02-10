@@ -17,26 +17,26 @@ class TeamController {
     @Autowired
     private lateinit var teamService: TeamService
 
-    @GetMapping("/members")
+    @GetMapping("/ms")
     fun getTeams(
         @RequestHeader(value = "uuid") uuid: String
     ): ResponseEntity<List<TeamResponse>> = ResponseEntity.ok(teamService.getTeams(uuid))
 
-    @GetMapping("/members/{teamId}")
+    @GetMapping("/ms/{teamId}")
     fun getTeamMembers(
         @RequestHeader(value = "uuid") uuid: String,
         @PathVariable teamId: Long
     ): ResponseEntity<List<TeamMemberResponse>> =
         ResponseEntity.ok(teamService.getTeamMembers(uuid, teamId))
 
-    @GetMapping("/members/{teamId}/match")
+    @GetMapping("/ms/{teamId}/match")
     fun validateUserTargetTeamMember(
         @RequestHeader(value = "uuid") uuid: String,
         @PathVariable teamId: Long
     ): ResponseEntity<MemberValidateResponse> =
         ResponseEntity.ok(teamService.validateUserTargetTeamMember(uuid, teamId))
 
-    @PostMapping("/students/join")
+    @PostMapping("/ss/join")
     fun joinTeamStudent(
         @RequestHeader(value = "uuid") uuid: String,
         @RequestHeader(value = "teamToken") teamToken: String
@@ -45,7 +45,7 @@ class TeamController {
         return ResponseEntity.created(URI("/api/v1/teams/${teamResponse.id}")).body(teamResponse)
     }
 
-    @PostMapping("/pros")
+    @PostMapping("/ps")
     fun setTeam(
         @RequestHeader(value = "uuid") uuid: String,
         @RequestBody teamRequest: TeamRequest
@@ -54,7 +54,7 @@ class TeamController {
         return ResponseEntity.created(URI("/api/v1/teams/${teamId}")).build()
     }
 
-    @PostMapping("/pros/join")
+    @PostMapping("/ps/join")
     fun joinTeamPro(
         @RequestHeader(value = "uuid") uuid: String,
         @RequestHeader(value = "teamToken") teamToken: String
@@ -63,7 +63,7 @@ class TeamController {
         return ResponseEntity.created(URI("/api/v1/teams/${teamResponse.id}")).body(teamResponse)
     }
 
-    @GetMapping("/pros/{teamId}/token")
+    @GetMapping("/ps/{teamId}/token")
     fun getTeamToken(
         @RequestHeader(value = "uuid") uuid: String,
         @PathVariable teamId: Long
