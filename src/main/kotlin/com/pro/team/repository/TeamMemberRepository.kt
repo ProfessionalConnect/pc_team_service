@@ -12,6 +12,7 @@ import java.util.*
 
 @Repository
 interface TeamMemberRepository: JpaRepository<TeamMember, Long> {
+    fun findByUuid(uuid: String): List<TeamMember>
     fun findByTeam(team: Team): List<TeamMember>
     fun findByTeamAndUuid(team: Team, uuid: String): Optional<TeamMember>
 }

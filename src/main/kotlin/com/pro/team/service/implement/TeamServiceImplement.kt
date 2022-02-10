@@ -24,8 +24,11 @@ class TeamServiceImplement: TeamService {
     private lateinit var teamMemberRepository: TeamMemberRepository
 
     @Transactional(readOnly = true)
-    override fun getTeams(uuid: String): List<TeamResponse> =
-        TeamResponse.listOf(teamRepository.findByUuid(uuid))
+    override fun getTeams(uuid: String): List<TeamResponse> {
+        val teamMemberList = teamMemberRepository.findByUuid(uuid)
+        val teamList = teamMemberList.map { teamMember -> teamMember.team }
+        return TeamResponse.listOf(teamList)
+    }
 
     @Transactional
     override fun setTeam(uuid: String, teamRequest: TeamRequest): Long? {
